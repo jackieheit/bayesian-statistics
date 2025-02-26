@@ -1,0 +1,54 @@
+---
+title: "lecture-4"
+format: html
+editor: visual
+---
+
+
+```{r}
+library(tidyverse)
+```
+```{r}
+# we want to plot a beta dist with a = 10.6, b = 39.4
+a = 10.6
+b = 39.4
+
+# want to find what these are for a given mode and 
+```
+
+
+```{r}
+plot_df = data.frame(theta = seq(from = 0, to = 1, length.out = 100)) %>% # seq function makes equally spaced values
+  mutate(p_theta = dbeta(theta, shape1 = a, shape2 = b))
+```
+
+```{r}
+plot_df %>% ggplot(aes(x = theta, y = p_theta)) + 
+  geom_line() +
+  labs(title = "prior")
+```
+
+```{r}
+N = 25
+z = 7
+a_post = a + z
+b_post = b + N - z
+```
+
+```{r}
+post_plot_df = data.frame(theta = seq(from = 0, to = 1, length.out = 100)) %>% # seq function makes equally spaced values
+  mutate(p_theta = dbeta(theta, shape1 = a_post, shape2 = b_post))
+
+post_plot_df %>% ggplot(aes(x = theta, y = p_theta)) + 
+  geom_line() +
+  labs(title = "Posterior")
+```
+```{r}
+# this is like the equivelent of a frequentist confidence interval
+qbeta(0.975, shape = a_post, shape2 = b_post)
+qbeta(0.025, shape = a_post, shape2 = b_post)
+```
+
+
+
+

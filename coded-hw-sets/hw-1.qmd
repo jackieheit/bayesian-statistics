@@ -1,0 +1,76 @@
+---
+title: "hw-1"
+format: html
+editor: visual
+---
+```{r}
+library(tidyverse)
+```
+
+1. (20 points) First, let’s look at the distribution of data (Yi = number correct) we would expect
+to see if θi = 0.2 across the whole population, i.e. everyone is at chance performance (no
+ESP). Using the R functions ggplot (with geom point and geom line) and dbinom, plot this
+distribution.
+
+```{r}
+n <- 25  # total number of trials
+theta <- 0.2  # probability of success
+
+Yi <- 0:n  # possible outcomes (0 to n)
+prob <- dbinom(Yi, size = n, prob = theta)
+
+# create a data frame for plotting
+data <- data.frame(Yi = Yi, Probability = prob)
+
+# Plot the distribution using ggplot
+ggplot(data, aes(x = Yi, y = Probability)) +
+  geom_point(color = "blue", size = 3) +  
+  geom_line(color = "blue", size = 1) +   
+  labs(title = "Binomial Distribution (n = 10, θ = 0.2)",
+       x = "Number Correct (Yi)",
+       y = "Probability") +
+  theme_minimal()
+
+```
+2. (20 points) Simulate data (using the R function rbinom) from n = 1000 people under the same
+assumption that θi = 1/5 = 0.2 (i.e. chance performance/no ESP). Make a histogram of this
+data. It should have the same shape as the binomial probability distribution you plotted in the
+previous question.
+
+```{r}
+# Parameters
+n_people <- 1000  # Number of people
+n_trials <- 10    # Number of trials for each person
+theta <- 0.2      # Probability of success
+
+# Simulate data using rbinom
+simulated_data <- rbinom(n = n_people, size = n_trials, prob = theta)
+
+# Create a data frame for plotting
+data <- data.frame(Yi = simulated_data)
+
+# Plot the histogram using ggplot
+ggplot(data, aes(x = Yi)) +
+  geom_histogram(binwidth = 1, color = "black", fill = "blue", alpha = 0.7) +
+  labs(title = "Histogram of Simulated Data (n = 1000, θ = 0.2)",
+       x = "Number Correct (Yi)",
+       y = "Frequency") +
+  theme_minimal()
+
+```
+
+
+3. (20 points) Repeat question 1, but now assume that our population has psychic powers, so
+everyone has a 90% chance of guessing the correct card on each trial.
+
+
+
+4. (20 points) Repeat question 2, but continue to assume that everyone has ESP (90% chance of
+guessing correctly).
+
+
+
+
+5. Now we will do a third simulation where we assume that 95% of the population has no ESP (i.e.
+θi = 0.2), but the remaining 5% of people have ESP (with a 90% chance of guessing correctly
+on each trial).

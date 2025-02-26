@@ -1,0 +1,81 @@
+---
+title: "Simple Stan Demo (Bernoulli-beta model)"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse) # for general use
+library(rstan) # for interacting with Stan
+library(bayesplot) # for plotting
+```
+#### Import data and select my data
+```{r}
+Zener = read.csv("../data/Zener_data.csv") # import the data
+my_Zener = Zener %>% filter(id == "spp36") # select my data
+my_Zener %>% head() # show the first few rows
+```
+
+#### Count number correct
+```{r}
+sum(my_Zener$correct)
+```
+
+#### Make a list of data (plus beta prior hyperparameters)
+```{r}
+stan_data_list = list(N = nrow(my_Zener), # number of trials (i.e. rows in the data frame)
+                      y = my_Zener$correct) # 1 = correct, 0 = wrong
+```
+
+#### Visualize the prior distribution (similar code to last week)
+```{r}
+data.frame(theta = seq(from = 0, to = 1, length.out = 200),
+                           distribution = "prior") %>%
+  mutate(p_theta = dbeta(theta, shape1 = 10.6, shape2 = 39.4)) %>%
+  ggplot(aes(x = theta, y = p_theta)) + 
+  geom_line(color = "blue") +
+  xlim(c(0, 1)) +
+  theme_classic()
+```
+
+#### Fit the model, i.e. do MCMC sampling
+```{r}
+bern_beta_fit = stan(file = "../stan-files/Bernoulli_beta.stan",
+                     model_name = "basic_Zener_card_model",
+                     data = stan_data_list,
+                     chains = 4,
+                     iter = 5000,
+                     warmup = 200)
+```
+
+#### Trace plot of theta (uses the bayesplot package)
+```{r}
+mcmc_trace(bern_beta_fit,
+           pars = c("theta"))
+```
+
+#### Print model summary
+```{r}
+print(bern_beta_fit, pars = c("theta"))
+```
+
+#### Histogram of posterior distribution (uses the bayesplot package)
+```{r}
+mcmc_hist(bern_beta_fit,
+          pars = c("theta")) +
+  xlim(c(0, 1)) # make sure that the x-axis shows the full range of possible theta values (0 to 1)
+```
+
+#### Plot posterior distribution with credible interval (uses the bayesplot package)
+```{r}
+mcmc_areas(bern_beta_fit,
+           pars = c("theta"),
+           prob = 0.95) + # 95% credible interval
+  xlim(c(0, 1)) # make sure that the x-axis shows the full range of possible theta values (0 to 1)
+```
+#### Plot credible interval for theta (uses the bayesplot package)
+```{r}
+mcmc_intervals(bern_beta_fit, 
+               pars = c("theta"),
+               prob = 0.5, # inner 50% credible interval
+               prob_outer = 0.95) # outer 95% credible interval
+```

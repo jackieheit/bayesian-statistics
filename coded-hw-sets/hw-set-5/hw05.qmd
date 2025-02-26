@@ -1,0 +1,116 @@
+---
+title: "Homework 5"
+author:
+- name: "<YOUR NAME>"
+  affiliation: "<YOUR UPI>"
+format:
+  typst:
+    section-numbering: 1.1.a
+    keep-typ: true
+    margin: { x: 0.5in, y: 0.5in }
+    include-before-body:
+    - text: |
+        #show heading: head => [
+          #pagebreak(weak: true)
+          #head
+        ]
+---
+
+# Question 1A
+
+```{r q1a}
+```
+
+# Question 1B
+
+```{r q1b}
+```
+
+# Question 1C
+
+```{r q1c}
+```
+
+# Question 1D
+
+```{r q1d}
+```
+
+# Question 1E
+
+```{r q1e}
+```
+
+# Question 1F
+
+```{r q1f}
+```
+
+# Question 1's Stan Code
+```{r q1stan, echo=F, results="asis"}
+q1.stan <- readLines("question1.stan")
+cat("```{.stan filename=\"question1.stan\" code-line-numbers=\"true\"}\n")
+cat(paste(q1.stan, collapse = "\n"))
+cat("\n```\n")
+```
+
+# Question 2A
+
+```{r q2a}
+```
+
+# Question 2B
+
+```{r q2b}
+```
+
+# Question 2C
+
+```{r q2c}
+```
+
+# Question 2D
+
+```{r q2d}
+```
+
+# Question 2's Stan Code
+```{r q2stan, echo=F, results="asis"}
+q2.stan <- readLines("question2.stan")
+cat("```{.stan filename=\"question2.stan\" code-line-numbers=\"true\"}\n")
+cat(paste(q2.stan, collapse = "\n"))
+cat("\n```\n")
+```
+
+# Question 3A
+
+```{r q3a}
+```
+
+# Question 3B
+
+```{r q3b}
+```
+
+# Question 3C
+
+```{r q3c}
+```
+
+# Question 3D
+
+```{r q3d}
+```
+
+# Question 3E
+
+```{r q3e}
+```
+
+# Question 3's Stan Code
+```{r q3stan, echo=F, results="asis"}
+q3.stan <- readLines("question3.stan")
+cat("```{.stan filename=\"question3.stan\" code-line-numbers=\"true\"}\n")
+cat(paste(q3.stan, collapse = "\n"))
+cat("\n```\n")
+```
