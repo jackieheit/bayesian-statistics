@@ -1,0 +1,93 @@
+---
+title: "hw-2"
+format: html
+editor: visual
+---
+
+
+## Expected Value
+
+1a) coin flip
+
+```{r}
+x = c(0, 1) # possible values
+px = c(0.5, 0.5) # probability of each value
+
+ex <- sum(x * px)
+ex
+```
+
+1b) Z = the result of a 20-sided die roll
+```{r}
+z = c(1:20)
+pz = rep(1/20, 20)
+
+ez <- sum(z * pz)
+ez
+```
+1c) 
+
+```{r}
+# for binomial distribution E(Y) = n*p where Y ~ Binom(n, p); Y_1 ~ binom(25, 0.2)
+n1 <- 25
+p1 <- 0.2
+
+ey1 <- 25 * 0.2
+ey1
+
+# the probability of getting 5 zener cards (successes) in 25 trials
+dbinom(5, size = 25, prob = 0.2)
+```
+
+1d) 
+
+```{r}
+# for binomial distribution E(Y) = n*p where Y2 ~ Binom(n, p); Y2 ~ binom(25, 0.9)
+n1 <- 25
+p1 <- 0.9
+
+ey1 <- 25 * 0.9
+ey1
+```
+
+
+## Variance
+1a) coin flip
+
+```{r}
+x = c(0, 1) # possible values
+px = c(0.5, 0.5) # probability of each value
+
+ex <- sum(x * px)
+ex
+
+# Variance
+sum(px * (x - ex)^2)
+```
+
+1b) Z = the result of a 20-sided die roll
+```{r}
+z = c(1:20)
+pz = rep(1/20, 20)
+
+ez <- sum(z * pz)
+ez
+
+# variance
+sum(pz * (z - ex)^2)
+```
+1c & 1d) V[Y] = n * p * (1 - p)
+ 
+```{r}
+n1 <- 25
+p1 <- 0.2
+p2 <- 0.9
+
+
+vy1 <- n1 * p1 * (1 - p1)
+vy2 <- n1 * p2 * (1 - p2)
+
+vy1
+vy2
+```
+

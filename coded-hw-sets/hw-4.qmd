@@ -1,0 +1,10 @@
+---
+title: "hw-4"
+format: html
+editor: visual
+---
+
+```{r}
+words <- read.csv("../data/word_memory_data_summarized.csv")
+```
+
