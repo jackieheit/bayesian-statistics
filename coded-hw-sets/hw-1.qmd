@@ -3,14 +3,12 @@ title: "hw-1"
 format: html
 editor: visual
 ---
+
 ```{r}
 library(tidyverse)
 ```
 
-1. (20 points) First, let’s look at the distribution of data (Yi = number correct) we would expect
-to see if θi = 0.2 across the whole population, i.e. everyone is at chance performance (no
-ESP). Using the R functions ggplot (with geom point and geom line) and dbinom, plot this
-distribution.
+1.  (20 points) First, let’s look at the distribution of data (Yi = number correct) we would expect to see if θi = 0.2 across the whole population, i.e. everyone is at chance performance (no ESP). Using the R functions ggplot (with geom point and geom line) and dbinom, plot this distribution.
 
 ```{r}
 n <- 25  # total number of trials
@@ -32,10 +30,8 @@ ggplot(data, aes(x = Yi, y = Probability)) +
   theme_minimal()
 
 ```
-2. (20 points) Simulate data (using the R function rbinom) from n = 1000 people under the same
-assumption that θi = 1/5 = 0.2 (i.e. chance performance/no ESP). Make a histogram of this
-data. It should have the same shape as the binomial probability distribution you plotted in the
-previous question.
+
+2.  (20 points) Simulate data (using the R function rbinom) from n = 1000 people under the same assumption that θi = 1/5 = 0.2 (i.e. chance performance/no ESP). Make a histogram of this data. It should have the same shape as the binomial probability distribution you plotted in the previous question.
 
 ```{r}
 # Parameters
@@ -59,18 +55,8 @@ ggplot(data, aes(x = Yi)) +
 
 ```
 
+3.  (20 points) Repeat question 1, but now assume that our population has psychic powers, so everyone has a 90% chance of guessing the correct card on each trial.
 
-3. (20 points) Repeat question 1, but now assume that our population has psychic powers, so
-everyone has a 90% chance of guessing the correct card on each trial.
+4.  (20 points) Repeat question 2, but continue to assume that everyone has ESP (90% chance of guessing correctly).
 
-
-
-4. (20 points) Repeat question 2, but continue to assume that everyone has ESP (90% chance of
-guessing correctly).
-
-
-
-
-5. Now we will do a third simulation where we assume that 95% of the population has no ESP (i.e.
-θi = 0.2), but the remaining 5% of people have ESP (with a 90% chance of guessing correctly
-on each trial).
+5.  Now we will do a third simulation where we assume that 95% of the population has no ESP (i.e. θi = 0.2), but the remaining 5% of people have ESP (with a 90% chance of guessing correctly on each trial).

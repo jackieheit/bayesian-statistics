@@ -1,9 +1,19 @@
 ---
-title: "hw-2"
-format: html
-editor: visual
+title: "Coding Homework 2"
+author: 
+- name: "Jacqueline Heitmann"
+  affiliation: "25562334"
+format: 
+  typst: 
+    section-numbering: 1.1.a
+    keep-typ: true
+    include-before-body: 
+    - text: |
+        #show heading: head => [
+          #pagebreak(weak: true)
+          #head
+          ]
 ---
-
 
 ## Expected Value
 
@@ -18,6 +28,7 @@ ex
 ```
 
 1b) Z = the result of a 20-sided die roll
+
 ```{r}
 z = c(1:20)
 pz = rep(1/20, 20)
@@ -25,7 +36,8 @@ pz = rep(1/20, 20)
 ez <- sum(z * pz)
 ez
 ```
-1c) 
+
+1c)
 
 ```{r}
 # for binomial distribution E(Y) = n*p where Y ~ Binom(n, p); Y_1 ~ binom(25, 0.2)
@@ -39,7 +51,7 @@ ey1
 dbinom(5, size = 25, prob = 0.2)
 ```
 
-1d) 
+1d)
 
 ```{r}
 # for binomial distribution E(Y) = n*p where Y2 ~ Binom(n, p); Y2 ~ binom(25, 0.9)
@@ -50,8 +62,8 @@ ey1 <- 25 * 0.9
 ey1
 ```
 
-
 ## Variance
+
 1a) coin flip
 
 ```{r}
@@ -66,6 +78,7 @@ sum(px * (x - ex)^2)
 ```
 
 1b) Z = the result of a 20-sided die roll
+
 ```{r}
 z = c(1:20)
 pz = rep(1/20, 20)
@@ -76,8 +89,9 @@ ez
 # variance
 sum(pz * (z - ex)^2)
 ```
-1c & 1d) V[Y] = n * p * (1 - p)
- 
+
+1c & 1d) V\[Y\] = n \* p \* (1 - p)
+
 ```{r}
 n1 <- 25
 p1 <- 0.2
@@ -90,4 +104,3 @@ vy2 <- n1 * p2 * (1 - p2)
 vy1
 vy2
 ```
-

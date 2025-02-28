@@ -1,9 +1,19 @@
 ---
-title: "hw-4"
-format: html
-editor: visual
+title: "PSYC 529 R Homework 4"
+author: 
+- name: "Jacqueline Heitmann"
+  affiliation: "25562334"
+format: 
+  typst: 
+    section-numbering: 1.1.a
+    keep-typ: true
+    include-before-body: 
+    - text: |
+        #show heading: head => [
+          #pagebreak(weak: true)
+          #head
+          ]
 ---
-
 ```{r}
 words <- read.csv("../data/word_memory_data_summarized.csv")
 ```
