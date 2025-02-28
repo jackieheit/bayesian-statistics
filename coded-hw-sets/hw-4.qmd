@@ -61,26 +61,27 @@ b_post
 conjugate prior demo” on Canvas as a template for doing all of this. That will make this part
 of the homework much easier and faster
 
-#### data frame for plotting prior distribution
+data frame for plotting prior distribution:
 ```{r}
 prior_plot_df = data.frame(theta = seq(from = 0, to = 1, length.out = 200),
                            distribution = "prior") %>%
   mutate(p_theta = dbeta(theta, shape1 = a, shape2 = b))
 ```
 
-#### data frame for plotting the posterior distribution
+data frame for plotting the posterior distribution:
 ```{r}
 post_plot_df = data.frame(theta = seq(from = 0, to = 1, length.out = 200),
                           distribution = "posterior") %>%
   mutate(p_theta = dbeta(theta, shape1 = a_post, shape2 = b_post))
 ```
-#### combine prior and posterior plotting data frames
+
+combine prior and posterior plotting data frames:
 ```{r}
 combo_plot_df = bind_rows(prior_plot_df,
                           post_plot_df)
 ```
 
-#### combined plot
+combined plot:
 ```{r}
 combo_plot_df %>% ggplot(aes(x = theta, y = p_theta, color = distribution)) +
   geom_line() +
@@ -91,6 +92,7 @@ probability distribution. Given the hyperparameters a and b of a beta distributi
 compute the distribution’s mode (ω) and expected value (i.e. mean, µ) using formulas given in
 the textbook (page 129) and summarized in Cliff’s notes for chapter 6 (these are on Canvas).
 Use these formulas and your R variables to compute and display the following:
+
 (a) (10 points) E[θ] (the prior mean of θ)
 ```{r}
 e_prior <- a / a + b
@@ -115,16 +117,37 @@ mode_post <- (a_post - 1) / (a_post + b_post - 2)
 mode_post
 ```
 
-5. You can use the R function qbeta to find quantiles of a beta distribution. For example, let’s
-suppose we want to find the median (0.5 quantile, i.e. 50th percentile) of a beta(3, 2) distribution.
+5. You can use the R function qbeta to find quantiles of a beta distribution. 
+
+For example, let’s suppose we want to find the median (0.5 quantile, i.e. 50th percentile) of a beta(3, 2) distribution.
 Then we use the following code: qbeta(p = 0.5, shape1 = 3, shape2 = 2)
 
 This tells use that, assuming a = 3 and b = 2, we have p(θ ≤ 0.6142724) = 0.5. In other words
-the median of a beta(3, 2) distribution is about 0.61. Use qbeta to compute the following:
+the median of a beta(3, 2) distribution is about 0.61. 
+
+Use qbeta to compute the following:
 (a) (5 points) The 5th percentile (i.e. 0.05 quantile) of the prior distribution
+```{r}
+qbeta(p = 0.05, a, b)
+```
+the probability of theta being less than or equal to 0.2253216 is roughly 5% in the prior distribution.
+
 (b) (5 points) The 5th percentile of the posterior distribution
+```{r}
+qbeta(p = 0.05, a_post, b_post)
+```
+The probability of theta being less than or equal to 0.78 is roughly 0.05. 
+
 (c) (5 points) The 95th percentile (i.e. 0.95 quantile) of the prior distribution
+```{r}
+qbeta(p = 0.95, a, b)
+```
+
 (d) (5 points) The 95th percentile of the posterior distribution
+```{r}
+qbeta(p = 0.95, a_post, b_post)
+```
+
 Note: We can use these percentiles to construct 90% credible intervals for θ: the probability
 that θ is between the 5th and 95th percentiles of the distribution is 90%. For the sake of time
 we won’t go into this in detail, but ask me if you have any questions about it (it’s very similar to
