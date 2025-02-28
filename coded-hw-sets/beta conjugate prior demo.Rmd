@@ -1,0 +1,45 @@
+---
+title: "Beta Distribution Conjugate Prior Updating Demo"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+#### prior and posterior hyperparameters
+```{r}
+# these of course will be different for your homework
+a = 10.6
+b = 39.4
+
+# in the homework you will have to compute the posterior hyperparameters yourself
+a_post = 17.6
+b_post = 57.4
+```
+
+#### data frame for plotting prior distribution
+```{r}
+prior_plot_df = data.frame(theta = seq(from = 0, to = 1, length.out = 200),
+                           distribution = "prior") %>%
+  mutate(p_theta = dbeta(theta, shape1 = a, shape2 = b))
+```
+
+#### data frame for plotting the posterior distribution
+```{r}
+post_plot_df = data.frame(theta = seq(from = 0, to = 1, length.out = 200),
+                          distribution = "posterior") %>%
+  mutate(p_theta = dbeta(theta, shape1 = a_post, shape2 = b_post))
+```
+#### combine prior and posterior plotting data frames
+```{r}
+combo_plot_df = bind_rows(prior_plot_df,
+                          post_plot_df)
+```
+
+#### combined plot
+```{r}
+combo_plot_df %>% ggplot(aes(x = theta, y = p_theta, color = distribution)) +
+  geom_line() +
+  scale_x_continuous(breaks = seq(from = 0, to = 1, by = 0.1)) # more marks on x axis
+```
