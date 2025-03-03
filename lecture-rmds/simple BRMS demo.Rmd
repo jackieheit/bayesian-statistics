@@ -1,0 +1,95 @@
+---
+title: "Intro to BRMS"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(bayesplot)
+#install.packages("brms")
+library(brms)
+```
+
+#### Import response time data
+```{r}
+rt_data_summarized = read.csv("../data/response time data (summarized).csv")
+print(rt_data_summarized)
+```
+#### Scatterplot with least squares regression line
+```{r}
+beta_hat = lm(mean_rt ~ age, data = rt_data_summarized) %>% coef()
+
+rt_data_summarized %>% ggplot(aes(x = age, y = mean_rt)) + 
+  geom_point() + 
+  ggtitle(paste0("r = ", cor(rt_data_summarized$age, rt_data_summarized$mean_rt) %>% round(2))) +
+  geom_abline(intercept = beta_hat[1], slope = beta_hat[2], color = "red") +
+  theme_classic()
+```
+
+#### Good old-fashioned least squares linear regression
+```{r}
+least_squares_fit = lm(mean_rt ~ age,
+                       data = rt_data_summarized)
+summary(least_squares_fit)
+```
+
+#### Fit a Bayesian linear regression model
+```{r}
+# writes a stan program for you
+Bayes_fit = brm(mean_rt ~ age,
+                data = rt_data_summarized,
+                family = gaussian(), # noise distribution classification, means we are using a normal distribution
+                prior = set_prior("normal(0, 100)", class = "b") + set_prior("normal(0, 100)", class = "Intercept")
+                + set_prior("normal(0, 100)", class = "sigma"))
+```
+
+#### Look at the Stan code
+```{r}
+stancode(Bayes_fit)
+```
+
+#### Traceplots to check for convergence
+```{r}
+mcmc_trace(Bayes_fit)
+```
+
+#### Summary
+```{r}
+# gives you posterior mean estimate, estimation error (sd), credible interval, Rhat stat, etc.
+summary(Bayes_fit)
+```
+
+#### Compare least squares estimates (from "lm") to the posterior mean estimates (from "brms")
+```{r}
+coef(least_squares_fit) %>% round(2) %>% print()
+fixef(Bayes_fit)[,"Estimate"] %>% round(2) %>% print()
+
+```
+Results are pretty similar between both methods.
+
+#### Fit a linear regression model with a different prior on the slope parameter
+```{r}
+Bayes_fit2 = brm(mean_rt ~ age,
+                 data = rt_data_summarized,
+                 family = gaussian(),
+                 # setting a different prior, much smaller deviation, will be closer to 0
+                 prior = set_prior("normal(0, 1)", class = "b") + set_prior("normal(0, 100)", class = "Intercept") + set_prior("normal(0, 100)", class = "sigma"))
+```
+
+#### Compare estimates
+```{r}
+coef(least_squares_fit) %>% round(2) %>% print()
+fixef(Bayes_fit)[,"Estimate"] %>% round(2) %>% print()
+fixef(Bayes_fit2)[,"Estimate"] %>% round(2) %>% print()
+```
+Prior set has a huge impact on estimation. Smaller prior estimate of standard deviation shrinks the slope significantly.
+
+#### Compare prior distributions
+```{r}
+get_prior(Bayes_fit)
+```
+
+```{r}
+get_prior(Bayes_fit2)
+```
+

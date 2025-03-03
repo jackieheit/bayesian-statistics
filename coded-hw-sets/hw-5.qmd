@@ -135,7 +135,8 @@ binom_beta_fit = stan(file = "../stan-files/Bernoulli_beta_hw5_Q2.stan",
 Rhat (use print).'
 
 ```{r}
-
+mcmc_trace(binom_beta_fit,
+           pars = c("theta"))
 ```
 
 (d) (5 points) Use print to obtain the posterior mean, standard deviation, and quantiles of

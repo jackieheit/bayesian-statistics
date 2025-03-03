@@ -10,6 +10,10 @@ data {
   real<lower=0> b;  // prior hyperparameter for Beta distribution
 }
 
+transformed data {
+  int y = z;  // Explicitly define a transformed data variable
+}
+
 parameters {
   real<lower=0, upper=1> theta;  // probability of success
 }
