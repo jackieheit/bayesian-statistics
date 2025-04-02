@@ -1,0 +1,101 @@
+---
+title: "Ana Intercept-Only Logistic Regression Example (Mouse Maze Data)"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(brms)
+library(bayesplot)
+library(bayestestR)
+```
+
+#### Import data
+```{r}
+maze_data = read.csv("../data/Ana maze data.csv")
+print(maze_data %>% head())
+```
+
+#### Summarize the data
+We will only be analyzing the data for one mouse at a time. Later we will learn how to use mixed effects models to analyze the data for all of the mice at once (similar to the hierarchical pooled data model we learned about previously).
+```{r}
+maze_data %>% group_by(mouse_id) %>% summarize(n_correct = sum(correct == "yes"), prop_correct = sum(correct == "yes")/10)
+```
+## Formulate the Research Question in Terms of Model Comparison
+See Example 21 in the textbook chapter.
+
+## Choose a Prior Distribution
+
+#### Visualize the prior distribution in terms of theta
+We could figure out the distribution of theta using math, but for simplicity we'll just take a bunch of random samples of beta0, convert these to theta, then plot a density estimate for theta.
+```{r}
+data.frame(beta0 = rcauchy(n = 10000, location = 0, scale = 1) # sample beta0 from the Cauchy prior with scale 1
+           ) %>%
+  mutate(theta = plogis(beta0)) %>% # convert beta0 to theta (logistic function)
+  ggplot(aes(x = theta)) +
+  geom_density(adjust = 2) + # smooth density estimate, with "adjust = 2" making it look smoother
+  theme_bw() # for aesthetics
+ggsave("../figures/Ana theta Cauchy implied prior r equals 1.png", width = 3, height = 2)
+```
+
+#### Visualize an alternative prior with narrower Cauchy scale (r = 0.5 instead of r = 1)
+```{r}
+data.frame(beta0 = rcauchy(n = 10000, location = 0, scale = 0.5) # sample beta0 from the Cauchy prior with scale 0.5
+           ) %>%
+  mutate(theta = plogis(beta0)) %>% # convert beta0 to theta (logistic function)
+  ggplot(aes(x = theta)) +
+  geom_density(adjust = 2) + # smooth density estimate, with "adjust = 2" making it look smoother
+  theme_bw() # for aesthetics
+ggsave("../figures/Ana theta Cauchy implied prior r equals half.png", width = 3, height = 2)
+```
+
+## Fit the Model, Do a Posterior Predictive Check, Revise if Needed
+We will only be fitting the model to data from mouse 1 for now.
+
+#### Fit the full model to data from mouse 1
+```{r}
+M1 = brm(correct ~ 1, # formula for model that only includes the intercept
+         data = maze_data %>% filter(mouse_id == "mouse_1"), # select data from only the first mouse
+         family = bernoulli(), # specify Bernoulli likelihood/noise distribution
+         chains = 4, # run 4 Markov chains
+         iter = 11000, # get 11000 samples per chain
+         warmup = 1000, # 1000 warmup (i.e. burn-in) samples per chain
+         prior = set_prior("cauchy(0, 1)", class = "Intercept"), # prior distribution on the intercept, i.e. beta0)
+         )
+```
+
+#### Check convergence with a traceplot
+Looks like a "fuzzy caterpillar", so we're good.
+```{r}
+mcmc_trace(M1)
+```
+
+#### Posterior predictive check
+This plots the proportions of correct and incorrect responses in the actual data (y) vs. the posterior predictive simulated data (y_rep). These look pretty similar, so the model looks good.
+```{r}
+pp_check(M1, type = "bars")
+#ggsave("../figures/Ana post pred.png", width = 3, height = 2)
+```
+
+## Use a Bayes Factor to Compare the Models
+
+#### Compute the Bayes factor
+For annoying technical reasons, we use a different R function to compute the Bayes factor in this case (ask me for the details if you want to hear me rant for a bit). Here we don't explictly fit the restricted model (M0), but instead specify the null hypothesis value of beta0. We will use the function "bayesfactor_models" for Bayesian t-tests and most other Bayes factor computations in the rest of this course.
+```{r}
+bayesfactor_pointnull(M1, parameters = c("Intercept"), null = 0)
+```
+## Report Results
+
+#### Posterior credible interval etc.
+```{r}
+summary(M1)
+```
+
+#### Posterior distribution plot for beta0 (log-odds)
+```{r}
+mcmc_areas(M1, 
+           pars = c("Intercept"), # only plot the intercept (i.e. beta0)
+           prob = 0.95 # specify that you want a 95% CI shaded in
+           ) + 
+  theme_bw() # for aesthetics
+```

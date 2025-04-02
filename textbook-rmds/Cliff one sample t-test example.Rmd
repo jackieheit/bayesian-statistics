@@ -1,0 +1,79 @@
+---
+title: "Cliff One Sample T-Test Example"
+output: html_notebook
+---
+
+#### Import data
+```{r}
+Cliff_data = read.csv("../data/Cliff cat treat weight data.csv")
+print(Cliff_data %>% head())
+```
+
+## Formulate the Research Question in Terms of Model Comparison
+See Example 1 in the textbook chapter.
+
+
+## Fit and Check Full Model, Revise if Needed
+
+#### Fit the model
+Notice that we get 40,000 total samples (4 chains * 10000 iterations per chain, excluding the warmup). Unlike in the Dr. Leo example, we aren't bothering to define custom stan code to compute delta.
+```{r}
+M1 = brm(weight ~ 1, # model formula
+         data = Cliff_data, # data
+         family = gaussian(), # normal likelihood
+         chains = 4, # run 4 Markov chains
+         iter = 11000, # get 11000 samples per chain
+         warmup = 1000, # 1000 warmup (i.e. burn-in) samples per chain
+         prior = set_prior("cauchy(0, (sqrt(2)/2)*sigma)", class = "Intercept"), # prior distribution on the intercept, i.e. beta0, i.e. mu
+         )
+```
+
+#### Check convergence with a traceplot
+Looks like a "fuzzy caterpillar", so we're good.
+```{r}
+mcmc_trace(M1)
+```
+
+#### Posterior predictive check (density plot)
+We see that the real data (y) doesn't match the simulated data (y_rep); there are outliers in the real data.
+```{r}
+pp_check(M1, ndraws = 5, type = "dens_overlay", adjust = 2)
+#ggsave("../figures/Cliff post pred 1.png", width = 3, height = 2)
+```
+
+#### Refit the model using a Student's t distribution for the likelhood ("robust" estimation)
+```{r}
+M1_robust = update(M1, family = student())
+```
+
+#### Posterior predictive check with the updated model
+This time it looks good.
+```{r}
+pp_check(M1_robust, ndraws = 5, type = "dens_overlay", adjust = 2)
+#ggsave("../figures/Cliff post pred 2.png", width = 3, height = 2)
+```
+
+## Compare the Full and Restricted Models with a Bayes Factor
+
+#### Fit the restricted model (M0) by updating the full model (M1)
+The "update" function allows you to create a modified copy of an existing brms model. In this case we change the model formula (so that it doesn't estimate an intercept). We use the "offset" function to specify that mu0 = 1 (it's a janky little R thing that we won't often need to do.)
+```{r}
+M0_robust = update(M1_robust,
+                   formula = weight ~ 0 + offset(1) # fit the model without estimating an intercept (it's fixed to 1)
+                   )
+```
+
+#### Compute the Bayes factor (BF_10)
+This function is from the bayestestR package. We could also use the "bayes_factor" function from brms that does the same thing, but the output of this function is a bit cleaner and its computations seem to be more consistent.
+```{r}
+bayesfactor_models(M0_robust, M1_robust)
+```
+Note that we can't compare this Bayes factor to the one computed by the BayesFactor package, because the latter uses a normal distribution (not Student's t) for the likelihood/noise distribution.
+
+#### Computing BF_01
+```{r}
+round(1/0.132, 2) # we round to 2 decimal places for clarity
+```
+
+## Report Results
+Because the Bayes factor provides substantial evidence for the restricted model, we won't summarize the posterior distribution of mu (which is computed under the full model).

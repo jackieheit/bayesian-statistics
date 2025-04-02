@@ -1,0 +1,151 @@
+---
+title: "Dr. Leo Paired T-Test Example"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(brms)
+library(bayesplot)
+library(bayestestR)
+```
+
+
+#### Import data
+```{r}
+pilot_data = read.csv("../data/Leo pilot data.csv")
+```
+
+#### Define difference scores (y)
+```{r}
+pilot_data = pilot_data %>% mutate(tail_cm_dif = tail_cm_before - tail_cm_after)
+```
+
+## Formulate the Research Question in Terms of Model Comparison
+See Example 3 in the textbook chapter.
+
+## Choose a Suitable Prior Distribution
+
+Dr. Leo is using the default prior distribution on sigma and a Cauchy(0, sqrt(2)/2) prior on delta (i.e. the scale hyperparameter is r = sqrt(2)/2).
+
+This implies a Cauchy(0, (sqrt(2)/2)*sigma) prior on the intercept parameter (i.e. on mu).
+
+#### Plot the prior on delta
+You don't need to plot the prior distribution every time you do an analysis if it's just a standard one like this, but here's the code just so you can see it.
+```{r}
+data.frame(delta = seq(from = -5, to = 5, length.out = 1000)) %>%
+  mutate(p_delta = dcauchy(delta, location = 0, scale = sqrt(2)/2)) %>%
+  ggplot(aes(x = delta, y = p_delta)) + 
+  geom_line() +
+  theme_bw()
+```
+
+## Fit and Check Full Model, Revise if Needed
+
+#### Write stan code to compute delta
+We will add this stan code to compute delta (standardized effect size) when running the model.
+```{r}
+stan_code_to_add_delta = "
+  real delta;
+  delta = Intercept/sigma;
+"
+```
+
+#### Fit the model
+Notice that we get 40,000 total samples (4 chains * 10000 iterations per chain, excluding the warmup). This is so that we get reliable Bayes factor computations. We use the "stanvars" argument to add in the stan code defined earlier to compute delta.
+```{r}
+M1 = brm(tail_cm_dif ~ 1, # model formula
+         data = pilot_data, # data
+         family = gaussian(), # normal likelihood
+         chains = 4, # run 4 Markov chains
+         iter = 11000, # get 11000 samples per chain
+         warmup = 1000, # 1000 warmup (i.e. burn-in) samples per chain
+         prior = set_prior("cauchy(0, (sqrt(2)/2)*sigma)", class = "Intercept"), # prior distribution on the intercept, i.e. beta0, i.e. mu
+         stanvars = stanvar(name = "delta", 
+                            scode = stan_code_to_add_delta, # stan code defined earlier
+                            block = "tparameters") # define delta (standardized effect size) in the "transformed parameters" stan code block
+         )
+```
+
+#### Look at the Stan code
+In particular, notice the definition of delta in the transformed parameters block. It's there because we used "stanvars" to add it.
+```{r}
+stancode(M1)
+```
+
+#### Check convergence with a traceplot
+Looks like a "fuzzy caterpillar", so we're good.
+```{r}
+mcmc_trace(M1)
+```
+
+#### Posterior predictive check (density plot)
+The simulated data (y_rep) looks like the real data (y), so we're good to go with this model. If we saw some outliers, skew or something else in our distribution, we would need to change the model and try again.
+```{r}
+pp_check(M1, # fitted model
+         ndraws = 5, # number of simulated data sets
+         type = "dens_overlay", # type of plot (smooth density estimates overlaid on top of each other)
+         adjust = 2 # makes the density estimate smoother than the default
+         )
+#ggsave("../figures/Leo post pred.png", width = 3, height = 2)
+```
+
+## Compare the Full and Restricted Models with a Bayes Factor
+
+#### Fit the restricted model (M0) by updating the full model (M1)
+The "update" function allows you to create a modified copy of an existing brms model. In this case we change the model formula (so that it doesn't estimate an intercept) and set "stanvars" to "NULL" (to remove the code for computing delta).
+```{r}
+M0 = update(M1,
+            formula = tail_cm_dif ~ 0, # fit the model without estimating an intercept (it's fixed to 0)
+            stanvars = NULL # get rid of the extra stan code for computing delta
+            )
+```
+
+#### Compute the Bayes factor (BF_10)
+This function is from the bayestestR package. We could also use the "bayes_factor" function from brms that does the same thing, but the output of this function is a bit cleaner and its computations seem to be more consistent.
+```{r}
+bayesfactor_models(M0, M1)
+```
+
+#### Comparison with the Bayes factor computed with the BayesFactor package
+The Bayesian t-test in the BayesFactor package uses a different prior on sigma (the Jeffreys prior), so the Bayes factor it computes is a little different. However the conclusion is the same: "substantial" (but not "strong") support for the full model (M1).
+```{r}
+library(BayesFactor)
+
+ttestBF(pilot_data$tail_cm_before, pilot_data$tail_cm_after, paired = TRUE)
+```
+
+## Report Results
+The "summary" function gives posterior means ("Estimate"), posterior standard deviations ("Est.Error"), and credible intervals ("l-95% CI" to "u-95% CI").
+```{r}
+summary(M1)
+```
+
+```{r}
+mcmc_areas(M1, 
+           pars = c("Intercept"), # only plot the intercept (i.e. beta0, i.e. mu)
+           prob = 0.95 # specify that you want a 95% CI shaded in
+           ) + 
+  theme_bw() # for aesthetics
+#ggsave("../figures/Leo posterior dist.png", width = 3, height = 2)
+```
+
+## APPENDIX: Bayes Factors Computed Using a Dumb (Flat) Prior
+See Example 14 in the textbook chapter.
+
+#### Refit the full model with a very flat prior (r = 100)
+Here we set the Cauchy scale hyperparameter for delta to r = 100, producing a very silly prior:
+
+delta ~ Cauchy(0, 100)
+mu | sigma ~ Cauchy(0, 100*sigma)
+```{r}
+M1_dumb_prior = update(M1, prior = set_prior("cauchy(0, 100*sigma)", class = "Intercept"))
+```
+
+#### Compute the Bayes factor (BF_10)
+With this dumb, flat/uninformative prior on mu (the intercept) we get a Bayes factor that favors the null hypothesis/restricted model (M0). We should not trust this Bayes factor because it was computed using an unrealistic prior distribution.
+```{r}
+bayesfactor_models(M0, M1_dumb_prior)
+```
+
+
