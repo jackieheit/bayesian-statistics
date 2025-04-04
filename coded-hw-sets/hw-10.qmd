@@ -1,0 +1,53 @@
+---
+title: "PSYC 529 R Homework 10"
+author: 
+- name: "Jacqueline Heitmann"
+  affiliation: "25562334"
+format: 
+  typst: 
+    section-numbering: 1.1.a
+    keep-typ: true
+    include-before-body: 
+    - text: |
+        #show heading: head => [
+          #pagebreak(weak: true)
+          #head
+          ]
+---
+Raven is a behavioral neuroscientist who used to work with Ana. She wants to examine whether
+a certain genetic mutation involving the dopamine system affects locomotor activity. Each of the
+mice in this study is either a mutant or a non-mutant control. Raven puts each mouse in an open
+topped box (the open field) for a fixed period of time and records the distance that this mouse
+traveled (in meters).
+
+1. 
+(a) [10 points] Write down the full and restricted models using the same notation as Example
+4 in the textbook. Give a brief, plain English description of what scientific hypothesis
+each model represents. To start with, use a normal distribution for the likelihood/noise
+distribution. Note: There’s no R code for this part.
+
+(b) [5 points] We will use a Cauchy(0,√2/2) prior distribution on standardized effect size (δ).
+Write down the prior distribution on β1 using the same kind of notation as the textbook.
+Note: There’s no R code for this part.
+
+2. 
+(a) [15 points] Import the data (it’s Raven mouse data.csv on Canvas). Use brms to fit the
+full model (call it M1). Run 11000 samples per chain with 1000 warm up samples and 4
+chains. Use stanvars to insert stan code that computes the standardized effect size (δ).
+Hint: Remember that δ has a different definition for the two sample t-test compared to
+the one sample/paired t-test that you did last week.
+
+(b) [21/2 points] Use a trace plot to check for MCMC convergence.
+
+(c) [25 points] Do a posterior predictive check (of the ‘‘dens overlay’’ type, separated by
+group). If there is a problem with the model fit, describe it. If needed, refit the full model
+with a Student’s t distribution instead of a normal distribution (you can use update), then
+do a posterior predictive check on the updated model to confirm that it’s okay.
+
+(d) [21/2 points] Compute BF1,0 using the bayesfactor models function.
+(e) [5 points] Compute BF1,0 using the BayesFactor package. Explain why the computed
+Bayes factor is slightly different from the one you obtained.
+
+3. [35 points] Follow the instructions described in section 1.5 of the textbook for reporting analysis
+results. See the relevant examples in the textbook chapter. Note: The answer will include
+both R code and text reporting your results. Feel free the ask me if you have any questions

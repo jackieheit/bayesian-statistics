@@ -1,0 +1,62 @@
+---
+title: "PSYC 529 R Homework 9"
+author: 
+- name: "Jacqueline Heitmann"
+  affiliation: "25562334"
+format: 
+  typst: 
+    section-numbering: 1.1.a
+    keep-typ: true
+    include-before-body: 
+    - text: |
+        #show heading: head => [
+          #pagebreak(weak: true)
+          #head
+          ]
+---
+
+1. Simple reaction time (simple RT) is how fast someone makes a predefined response to a single
+stimulus. The reaction time task we did in class measured simple RT. Choice reaction time (choice
+RT) is how fast someone makes the appropriate response to one of several stimuli. Boxing provides
+a real life example of a choice RT task: you need to defend against different punches (stimuli) with
+different blocks or dodges (responses). Of course in psychology research choice RT tasks typically
+involve pressing different buttons in response to different stimuli.
+
+The file hals-data-subset.csv (on Canvas) contains data from a small subset of participants from
+a public health study called the HALS. Participants completed both a simple RT task and a choice
+RT task. Each task had several trials, but for simplicity each participant’s data is summarized as the
+sample mean of RT across trials. You will use this data set to test whether choice RT is different from
+simple RT.
+
+** VERY IMPORTANT NOTE ** Before downloading this data set, you need to register with
+the UK Data Service in order to comply with privacy laws: https://ukdataservice.ac.uk/
+I have already done so; it was pretty straightforward. Please let me know if you have any questions.
+
+(a) [10 points] Write down the full and restricted models using the same notation as Example 4 in
+the textbook. Give a brief, plain English description of what scientific hypothesis each model
+represents. To start with, use a normal distribution for the likelihood/noise distribution. Note:
+There’s no R code for this part.
+
+(b) [5 points] We will use a Cauchy(0, 1) prior distribution on standardized effect size (δ). Write
+down the prior distribution on µ using the same kind of notation as Examples 8 and 9. Note:
+There’s no R code for this part.
+
+(c) [21/2 points] Import the data. Define any needed variable or variables.
+
+(d) [15 points] Use brms to fit the full model (call it M1). Run 11000 samples per chain with 1000
+warm up samples and 4 chains. Use stanvars to insert stan code that computes the standardized
+effect size (δ). Hint: For this and the remaining parts, use the Cliff and Leo example R code as
+a starting point.
+
+(e) [21/2 points] Use a trace plot to check for MCMC convergence.
+
+(f) [25 points] Do a posterior predictive check (of the ‘‘dens overlay’’ type). If there is a problem
+with the model fit, describe it. If needed, refit the full model with a Student’s t distribution
+instead of a normal distribution (you can use update), then do a posterior predictive check on
+the updated model to confirm that it’s okay.
+
+(g) [10 points] Compute BF1,0 using the bayesfactor models function.
+
+(h) [30 points] Follow the instructions described in section 1.5 of the textbook for reporting analysis
+results. See Examples 17, 18, and 25 in the textbook chapter. Note: The answer will include
+both R code and text reporting your results. Feel free the ask me if you have any questions
