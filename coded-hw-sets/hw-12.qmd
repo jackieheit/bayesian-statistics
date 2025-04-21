@@ -1,0 +1,71 @@
+---
+title: "PSYC 529 R Homework 12"
+author: 
+- name: "Jacqueline Heitmann"
+  affiliation: "25562334"
+format: 
+  typst: 
+    section-numbering: 1.1.a
+    keep-typ: true
+    include-before-body: 
+    - text: |
+        #show heading: head => [
+          #pagebreak(weak: true)
+          #head
+          ]
+---
+
+In this homework, we will practice using mixed effects logistic regression models to analyze our
+word memory data. Recall that this is a repeated measures experiment, so a mixed effects model
+is appropriate. The model is a bit different from the one discussed in the textbook chapter because
+the predictor is now nominal (like an ANOVA) instead of metric. However the basic concepts are
+all the same. Our main question is whether the probability of saying “yes, I recognize that word”
+differs between the “related unmemorized” and “unrelated memorized” trial types, i.e. whether
+seeing unmemorized words related to the memorized ones can trick you into thinking you saw them
+before.
+
+1. We will start by looking at the data.
+(a) [5 points] Import the data in trial-by-trial form (word memory data.csv). Print the first
+few rows using head. What columns represent participant, trial type, and the “yes”/“no”
+response?
+
+(b) [5 points] Use table to see how many trials we have per participant.
+
+(c) [5 points] Use unique and length to count how many participants we have.
+
+2. Now we will practice fitting the full model and doing posterior predictive checks.
+(a) [10 points] Set proper contrast codes (contr.equalprior pairs). This is very important for reasons explained in the chapter on one-way ANOVA (use the code from the
+ANOVA example).
+
+(b) [15 points] Fit the full model, i.e. the one assuming that all trial types have different “yes”
+probabilities. Include random effects. Use the same settings (number of iterations etc.) as
+in the last homework and previous ones. Make sure to include the argument save pars
+= save pars(all = TRUE) (this is important for computing the Bayes factor). Use a
+Cauchy(0, 0.5) prior distribution on the fixed slope (β1) and default priors on everything
+else.
+
+(c) [5 points] Make a traceplot of the fixed effects only to assess convergence (including all
+of the random effects would make the plots too small).
+
+(d) [10 points] Make a posterior predictive plot (type = ‘‘bars grouped’’) organized by
+trial type. Make another one organized by participant. Do these look fine (the answer
+should be “yes”)?
+
+3. Finally, we will compare models and come to a conclusion.
+(a) [15 points] Use update to fit a model (M0) that asserts that both non-studied word conditions are equivalent, i.e. that there is no difference between the “related unmemorized”
+and “unrelated memorized” trial types. Hint: You may need to define a new column in
+your data frame to use as a predictor; M0 is not an intercept-only model.
+
+(b) [5 points] Compute BF1,0 using bayesfactor models.
+
+(c) [10 points] Write a sentence describing the result. Follow our practice of including the
+Bayes factor, a description (“inconclusive”, “substantial”, “strong”, or “decisive”), and a
+plain English description of what hypothesis was supported.
+
+(d) [15 points] It is far more irritating than it should be to get the fixed effects for each
+trial, but we can do so using the emmeans package (you may need to install it). Use the
+following code to obtain point estimates (posterior means) and 95% credible intervals for
+the probability of saying “yes” for each trial type:
+Then write up a sentence describing these results. We will use the credible intervals of the
+condition-specific fixed effects instead of a plot of posterior distributions; it is possible to
+obtain a plot, but this is easier.

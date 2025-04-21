@@ -1,0 +1,48 @@
+---
+title: "PSYC 529 R Homework 11"
+author: 
+- name: "Jacqueline Heitmann"
+  affiliation: "25562334"
+format: 
+  typst: 
+    section-numbering: 1.1.a
+    keep-typ: true
+    include-before-body: 
+    - text: |
+        #show heading: head => [
+          #pagebreak(weak: true)
+          #head
+          ]
+---
+
+In this homework assignment, we will ask the question “Does choice reaction time increase with
+age?” (the relevant variable name is crtmean in the data file hals data subset.csv).
+
+1. (a) [15 points] Import the data. Use brms to fit a simple linear regression model (with a normal
+likelihood). Use a Cauchy(0, 0.35) prior distribution on β∗1 =β1σ. Run 11000 samples per
+chain with 1000 warm up samples and 4 chains (i.e. use the usual settings). Use a trace
+plot to check for MCMC convergence.
+
+(b) [10 points] Do a posterior predictive check of the ‘‘dens overlay’’ type. Describe the
+plot.
+
+(c) [10 points] Do a posterior predictive check using boxplots. Describe the plot.
+
+(d) [10 points] If needed, revise the model, then do a posterior predictive check on the updated
+model to confirm that it’s okay (describe the plots). If no revision is needed, explain
+why.
+
+(e) [5 points] Compute a Bayes factor comparing the full and restricted models using the
+bayesfactor models function. Make sure to define the correct restricted model.
+
+2. Now we will report our results.
+(a) [15 points] Report the Bayes factor using the guidelines we have previously established
+(see the textbook examples).
+
+(b) [10 points] Produce a scatterplot of the data along with the fitted regression line (use
+predict).
+
+(c) [10 points] Produce a plot of 90% credible intervals for β0 and β1.
+
+(d) [15 points] Describe the relationship between age and choice reaction time, referring to
+these plots.
